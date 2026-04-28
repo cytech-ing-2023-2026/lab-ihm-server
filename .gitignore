@@ -67,5 +67,6 @@ lab-ihm-server_autogen
 # VSCode
 .vscode
 
-# Executable
+# Executable & Misc
 lab-ihm-server
+*.sqlite
