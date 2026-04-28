@@ -12,11 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core LinguistTools)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core LinguistTools)
 
-set(TS_FILES lab-ihm-server_fr_FR.ts)
-
 add_executable(lab-ihm-server
   main.cpp
-  ${TS_FILES}
 )
 target_link_libraries(lab-ihm-server Qt${QT_VERSION_MAJOR}::Core)
 
