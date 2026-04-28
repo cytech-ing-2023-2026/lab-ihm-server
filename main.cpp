@@ -4,6 +4,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include "model.hpp"
+
 int hashPassword(QString password, char hash[crypto_pwhash_STRBYTES]) {
     return crypto_pwhash_str(
         hash,

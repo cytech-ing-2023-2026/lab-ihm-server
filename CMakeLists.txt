@@ -15,7 +15,10 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SODIUM REQUIRED IMPORTED_TARGET libsodium)
 
 add_executable(lab-ihm-server
+  model.cpp
   main.cpp
+
+  model.hpp
 )
 
 target_include_directories(lab-ihm-server PRIVATE ${SODIUM_INCLUDE_DIRS})
