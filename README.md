@@ -52,6 +52,14 @@ Or run directly:
 
 The server will start listening on port 8080.
 
+## Cross compilation
+
+We use Docker to build the app into an ARM64 AppImage. The artifact will be built in the `dist` directory.
+
+```
+docker compose run --rm --build bundle
+```
+
 ## Database Setup
 
 The server uses SQLite with a database file `database.sqlite`. The schema includes:
