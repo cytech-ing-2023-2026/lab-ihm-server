@@ -1,9 +1,11 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QTcpSocket>
+#include <QJsonArray>
 #include "model.hpp"
 
 Session::Session(QTcpSocket *s) : userId(-1), socket(s) {}
+
 
 int Session::getUserId() {
     return userId; 
@@ -43,14 +45,18 @@ ClientMessage readClientMessage(QJsonObject json) {
         QJsonValueRef name = contentObj["name"];
         QJsonValueRef password = contentObj["password"];
         if(!name.isString() || !password.isString()) return errorClientMessage(json);
-
         return {ClientMessageId::LOGIN, ClientLoginContent{name.toString(), password.toString()}};
     } else if(typeStr == "send") {
         QJsonValueRef receiver = contentObj["receiver"];
         QJsonValueRef message = contentObj["message"];
         if(!receiver.isDouble() || !message.isString()) return errorClientMessage(json);
         return {ClientMessageId::SEND, ClientSendContent{receiver.toInt(), message.toString()}};
-    } else {
+    }  else if (typeStr == "delete") {
+        QJsonValueRef userId = contentObj["user_id"];
+        if(!userId.isDouble()) return errorClientMessage(json);
+        return {ClientMessageId::DELETE, userId.toInt()};
+    }
+    else {
         return errorClientMessage(json);
     }
 }
@@ -67,12 +73,48 @@ QJsonObject writeServerMessage(ServerMessage message) {
             json["type"] = "login_failure";
             break;
         }
-        case ServerMessageId::MESSAGE: {
+        case ServerMessageId::MESSAGE: { 
             MessageInfo info = std::get<MessageInfo>(message.content);
             json["type"] = "message";
-            json["sender"] = info.sender;
-            json["receiver"] = info.receiver;
-            json["content"] = info.content;
+
+            QJsonObject content;
+            content["sender"] = info.sender;
+            content["receiver"] = info.receiver;
+            content["message"] = info.content;
+            json["content"] = content;
+            break;
+        }
+        case ServerMessageId::HISTORY: {
+            MessageHistory history = std::get<MessageHistory>(message.content);
+            json["type"] = "history";
+            QJsonObject content;
+           
+            QJsonArray users;
+            for(const auto user : history.users) {
+                QJsonObject userObj;
+                userObj["id"] = user.userId;
+                userObj["name"] = user.name;
+                users.append(userObj);
+            }
+            content["users"] = users;
+
+            QJsonArray messages;
+            for(const auto msg : history.messages) {
+                QJsonObject msgObj;
+                msgObj["sender"] = msg.sender  ;
+                msgObj["receiver"] = msg.receiver;
+                msgObj["message"] = msg.content;
+                messages.append(msgObj);
+            }
+            content["messages"] = messages;
+            json["content"] = content;
+            break;
+        }
+        case ServerMessageId::USER_DELETED: {
+            json["type"] = "user_deleted";
+            QJsonObject content;
+            content["user_id"] = std::get<int>(message.content);
+            json["content"] = content;
             break;
         }
         case ServerMessageId::ERROR: {
