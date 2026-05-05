@@ -31,3 +31,6 @@ install(TARGETS lab-ihm-server
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+include(cmake/QtArm64Bundle.cmake)
+qtarm64_bundle_app(lab-ihm-server)
