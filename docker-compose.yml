@@ -1,0 +1,24 @@
+services:
+  bundle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/arm64
+    platform: linux/arm64
+    image: qt-arm64-bundler:latest
+    volumes:
+      - ./:/src
+      - ./dist:/out
+    environment:
+      SRC_DIR: /src
+      OUT_DIR: /out
+      BUILD_DIR: /work/build
+      APPDIR: /work/AppDir
+      # Set these two for your project:
+      APP_TARGET: lab-ihm-server
+      APP_NAME: lab-ihm-server
+      # Optional:
+      # APP_VERSION: 1.0.0
+      # CMAKE_BUILD_TYPE: Release
+      # CMAKE_GENERATOR: Ninja
